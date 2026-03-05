@@ -2,100 +2,54 @@
 # 文档: https://golangci-lint.run/usage/configuration/
 
 run:
-  # 超时时间
   timeout: 5m
-
-  # 跳过的目录
-  skip-dirs:
-    - vendor
-    - testdata
-    - dist
-    - bin
-
-  # 跳过的文件
-  skip-files:
-    - ".*\\.pb\\.go$"
-    - ".*_gen\\.go$"
-
-  # Go版本
   go: "1.22"
 
-  # 构建标签
-  build-tags:
-    - integration
-
-# 输出配置
 output:
   formats:
     - format: colored-line-number
   print-issued-lines: true
   print-linter-name: true
+  sort-results: true
 
-# Linters配置
 linters:
   enable:
-    # 默认启用
     - errcheck
     - gosimple
     - govet
     - ineffassign
     - staticcheck
     - unused
+    - bodyclose
+    - copyloopvar
+    - dupl
+    - exhaustive
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - goimports
+    - gosec
+    - misspell
+    - nakedret
+    - noctx
+    - prealloc
+    - rowserrcheck
+    - sqlclosecheck
+    - stylecheck
+    - unconvert
+    - unparam
+    - whitespace
 
-    # 额外启用
-    - bodyclose      # 检查HTTP响应体是否关闭
-    - dogsled        # 检查过多空白标识符
-    - dupl           # 检查重复代码
-    - exportloopref  # 检查循环变量导出
-    - exhaustive     # 检查switch完整性
-    - gochecknoinits # 检查init函数
-    - goconst        # 检查可替换为常量的字符串
-    - gocritic       # Go代码检查器
-    - gocyclo        # 圈复杂度
-    - gofmt          # 格式检查
-    - goimports      # 导入检查
-    - goprintffuncname # printf函数名检查
-    - gosec          # 安全检查
-    - misspell       # 拼写检查
-    - nakedret       # 裸返回检查
-    - noctx          # 无context检查
-    - prealloc       # 预分配检查
-    - rowserrcheck   # SQL rows.Err检查
-    - sqlclosecheck  # SQL关闭检查
-    - stylecheck     # 样式检查
-    - unconvert      # 不必要的类型转换
-    - unparam        # 未使用的参数
-    - whitespace     # 空白检查
-
-  disable:
-    - funlen         # 函数长度检查（由团队决定）
-    - lll            # 行长度检查
-    - wsl            # 空白行检查
-
-  presets:
-    - bugs
-    - comment
-    - complexity
-    - error
-    - format
-    - import
-    - metalinter
-    - module
-    - performance
-    - sql
-    - style
-    - test
-    - unused
-
-# Linters设置
 linters-settings:
   errcheck:
     check-type-assertions: true
     check-blank: true
 
   govet:
-    check-shadowing: true
-    enable-all: true
+    enable:
+      - shadow
 
   gocyclo:
     min-complexity: 15
@@ -111,28 +65,24 @@ linters-settings:
     locale: US
 
   goimports:
-    local-prefixes: github.com/your-org/todo-tracker
+    local-prefixes: github.com/todo-tracker/todo-tracker
 
   gofmt:
     simplify: true
 
   gosec:
     excludes:
-      - G104 # 忽略未检查的错误
+      - G104
 
   gocritic:
     enabled-tags:
       - diagnostic
-      - experimental
-      - opinionated
       - performance
       - style
     disabled-checks:
       - dupImport
       - ifElseChain
-      - octalLiteral
       - whyNoLint
-      - wrapperFunc
 
   exhaustive:
     default-signifies-exhaustive: false
@@ -152,20 +102,12 @@ linters-settings:
     multi-if: false
     multi-func: false
 
-# 问题配置
 issues:
-  # 排除默认的排除规则
   exclude-use-default: false
-
-  # 每个linter的最大问题数
   max-issues-per-linter: 0
-
-  # 最大相同问题数
   max-same-issues: 0
 
-  # 排除规则
   exclude-rules:
-    # 测试文件放宽检查
     - path: _test\.go
       linters:
         - dupl
@@ -173,21 +115,14 @@ issues:
         - goconst
         - gocyclo
 
-    # 生成的文件跳过
     - path: \.pb\.go
       linters:
         - all
 
-    # main.go允许exit
     - path: cmd/
       linters:
         - gochecknoinits
 
-  # 新代码检查
-  new:
-    from-rev: HEAD~1
-
-# 严重性配置
 severity:
   default-severity: error
   rules:
