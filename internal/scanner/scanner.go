@@ -6,7 +6,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/todo-tracker/todo-tracker/pkg/types"
+	"github.com/mxihan/todo-tracker/pkg/types"
 )
 
 // Scanner 主扫描器结构

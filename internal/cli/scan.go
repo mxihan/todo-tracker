@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/todo-tracker/todo-tracker/pkg/types"
+	"github.com/mxihan/todo-tracker/pkg/types"
 )
 
 // scanCmd 扫描命令

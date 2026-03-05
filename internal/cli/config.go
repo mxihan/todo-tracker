@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/todo-tracker/todo-tracker/pkg/types"
+	"github.com/mxihan/todo-tracker/pkg/types"
 )
 
 // configCmd 配置管理命令

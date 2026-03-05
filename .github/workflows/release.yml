@@ -123,7 +123,7 @@ jobs:
     name: Update Homebrew Formula
     needs: release
     runs-on: ubuntu-latest
-    if: github.repository == 'your-org/todo-tracker' && !contains(github.ref_name, '-')
+    if: github.repository == 'mxihan/todo-tracker' && !contains(github.ref_name, '-')
     steps:
       - name: Update Homebrew tap
         run: |

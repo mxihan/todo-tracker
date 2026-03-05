@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/todo-tracker/todo-tracker/pkg/types"
+	"github.com/mxihan/todo-tracker/pkg/types"
 	_ "github.com/mattn/go-sqlite3"
 )
 

@@ -23,28 +23,28 @@
 #### Homebrew (推荐)
 
 ```bash
-brew tap your-org/tap
+brew tap mxihan/tap
 brew install todo-tracker
 ```
 
 #### 二进制下载
 
-从 [GitHub Releases](https://github.com/your-org/todo-tracker/releases) 下载对应平台的二进制文件：
+从 [GitHub Releases](https://github.com/mxihan/todo-tracker/releases) 下载对应平台的二进制文件：
 
 ```bash
 # Linux/macOS
-curl -sSL https://github.com/your-org/todo-tracker/releases/latest/download/todo-tracker-$(uname -s)-$(uname -m) -o todo
+curl -sSL https://github.com/mxihan/todo-tracker/releases/latest/download/todo-tracker-$(uname -s)-$(uname -m) -o todo
 chmod +x todo
 sudo mv todo /usr/local/bin/
 
 # Windows (PowerShell)
-Invoke-WebRequest -Uri "https://github.com/your-org/todo-tracker/releases/latest/download/todo-tracker-windows-amd64.exe" -OutFile "todo.exe"
+Invoke-WebRequest -Uri "https://github.com/mxihan/todo-tracker/releases/latest/download/todo-tracker-windows-amd64.exe" -OutFile "todo.exe"
 ```
 
 #### 从源码构建
 
 ```bash
-git clone https://github.com/your-org/todo-tracker.git
+git clone https://github.com/mxihan/todo-tracker.git
 cd todo-tracker
 go build -o todo ./cmd/todo
 ```
@@ -325,7 +325,7 @@ jobs:
 
       - name: 安装todo-tracker
         run: |
-          curl -sSL https://github.com/your-org/todo-tracker/releases/latest/download/todo-tracker-linux-amd64 -o todo
+          curl -sSL https://github.com/mxihan/todo-tracker/releases/latest/download/todo-tracker-linux-amd64 -o todo
           chmod +x todo
 
       - name: 检查过期TODO
@@ -368,28 +368,28 @@ Unlike simple TODO scanners, TODO Tracker focuses on:
 #### Homebrew (Recommended)
 
 ```bash
-brew tap your-org/tap
+brew tap mxihan/tap
 brew install todo-tracker
 ```
 
 #### Binary Download
 
-Download the binary for your platform from [GitHub Releases](https://github.com/your-org/todo-tracker/releases):
+Download the binary for your platform from [GitHub Releases](https://github.com/mxihan/todo-tracker/releases):
 
 ```bash
 # Linux/macOS
-curl -sSL https://github.com/your-org/todo-tracker/releases/latest/download/todo-tracker-$(uname -s)-$(uname -m) -o todo
+curl -sSL https://github.com/mxihan/todo-tracker/releases/latest/download/todo-tracker-$(uname -s)-$(uname -m) -o todo
 chmod +x todo
 sudo mv todo /usr/local/bin/
 
 # Windows (PowerShell)
-Invoke-WebRequest -Uri "https://github.com/your-org/todo-tracker/releases/latest/download/todo-tracker-windows-amd64.exe" -OutFile "todo.exe"
+Invoke-WebRequest -Uri "https://github.com/mxihan/todo-tracker/releases/latest/download/todo-tracker-windows-amd64.exe" -OutFile "todo.exe"
 ```
 
 #### Build from Source
 
 ```bash
-git clone https://github.com/your-org/todo-tracker.git
+git clone https://github.com/mxihan/todo-tracker.git
 cd todo-tracker
 go build -o todo ./cmd/todo
 ```

@@ -1,4 +1,4 @@
-module github.com/todo-tracker/todo-tracker
+module github.com/mxihan/todo-tracker
 
 go 1.21
 

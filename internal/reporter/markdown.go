@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/todo-tracker/todo-tracker/pkg/types"
+	"github.com/mxihan/todo-tracker/pkg/types"
 )
 
 // MarkdownReporter Markdown 格式报告生成器
@@ -108,7 +108,7 @@ func (r *MarkdownReporter) Report(result *types.ScanResult) error {
 
 	// 页脚
 	fmt.Fprintln(r.output, "---")
-	fmt.Fprintln(r.output, "*由 [TODO Tracker](https://github.com/todo-tracker/todo-tracker) 生成*")
+	fmt.Fprintln(r.output, "*由 [TODO Tracker](https://github.com/mxihan/todo-tracker) 生成*")
 
 	return nil
 }

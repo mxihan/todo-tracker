@@ -1,36 +1,36 @@
 # Homebrew Formula for TODO Tracker
 #
 # 使用方法:
-# 1. 将此文件放入 your-org/homebrew-tap/Formula/todo-tracker.rb
+# 1. 将此文件放入 mxihan/homebrew-tap/Formula/todo-tracker.rb
 # 2. 更新 url 和 checksum 为实际值
 #
 # 安装命令:
-#   brew tap your-org/tap
+#   brew tap mxihan/tap
 #   brew install todo-tracker
 
 class TodoTracker < Formula
   desc "Intelligent TODO triage tool for codebases"
-  homepage "https://github.com/your-org/todo-tracker"
+  homepage "https://github.com/mxihan/todo-tracker"
   version "0.1.0"
   license "MIT"
 
   # 在发布新版本时更新这些URL
   if OS.mac? && Hardware::CPU.arm?
-    url "https://github.com/your-org/todo-tracker/releases/download/v#{version}/todo-tracker-darwin-arm64.tar.gz"
+    url "https://github.com/mxihan/todo-tracker/releases/download/v#{version}/todo-tracker-darwin-arm64.tar.gz"
     sha256 "ARM64_MACOS_CHECKSUM_PLACEHOLDER"
   elsif OS.mac? && Hardware::CPU.intel?
-    url "https://github.com/your-org/todo-tracker/releases/download/v#{version}/todo-tracker-darwin-amd64.tar.gz"
+    url "https://github.com/mxihan/todo-tracker/releases/download/v#{version}/todo-tracker-darwin-amd64.tar.gz"
     sha256 "AMD64_MACOS_CHECKSUM_PLACEHOLDER"
   elsif OS.linux? && Hardware::CPU.arm?
-    url "https://github.com/your-org/todo-tracker/releases/download/v#{version}/todo-tracker-linux-arm64.tar.gz"
+    url "https://github.com/mxihan/todo-tracker/releases/download/v#{version}/todo-tracker-linux-arm64.tar.gz"
     sha256 "ARM64_LINUX_CHECKSUM_PLACEHOLDER"
   elsif OS.linux? && Hardware::CPU.intel?
-    url "https://github.com/your-org/todo-tracker/releases/download/v#{version}/todo-tracker-linux-amd64.tar.gz"
+    url "https://github.com/mxihan/todo-tracker/releases/download/v#{version}/todo-tracker-linux-amd64.tar.gz"
     sha256 "AMD64_LINUX_CHECKSUM_PLACEHOLDER"
   end
 
   head do
-    url "https://github.com/your-org/todo-tracker.git", branch: "main"
+    url "https://github.com/mxihan/todo-tracker.git", branch: "main"
     depends_on "go" => :build
   end
 
@@ -99,4 +99,4 @@ end
 # 5. 提交PR到homebrew-tap仓库
 #
 # 自动化更新（使用brew bump）:
-#   brew bump-formula-pr todo-tracker --url https://github.com/your-org/todo-tracker/releases/download/v0.2.0/todo-tracker-darwin-arm64.tar.gz
+#   brew bump-formula-pr todo-tracker --url https://github.com/mxihan/todo-tracker/releases/download/v0.2.0/todo-tracker-darwin-arm64.tar.gz

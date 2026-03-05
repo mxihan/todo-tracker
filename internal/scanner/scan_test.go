@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/todo-tracker/todo-tracker/internal/parser"
-	"github.com/todo-tracker/todo-tracker/pkg/types"
+	"github.com/mxihan/todo-tracker/internal/parser"
+	"github.com/mxihan/todo-tracker/pkg/types"
 )
 
 // TestEndToEndScan 测试端到端扫描流程

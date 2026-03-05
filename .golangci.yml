@@ -65,7 +65,7 @@ linters-settings:
     locale: US
 
   goimports:
-    local-prefixes: github.com/todo-tracker/todo-tracker
+    local-prefixes: github.com/mxihan/todo-tracker
 
   gofmt:
     simplify: true

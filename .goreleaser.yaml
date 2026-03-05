@@ -93,7 +93,7 @@ release:
     一个智能的 TODO 分诊工具，帮助你从数百个 TODO 中找出本周需要关注的那几个。
   footer: |
 
-    **完整 Changelog**: https://github.com/todo-tracker/todo-tracker/compare/{{ .PreviousTag }}...{{ .Tag }}
+    **完整 Changelog**: https://github.com/mxihan/todo-tracker/compare/{{ .PreviousTag }}...{{ .Tag }}
 
     感谢所有贡献者!
 
@@ -105,7 +105,7 @@ brews:
       name: homebrew-tap
       branch: main
     folder: Formula
-    homepage: "https://github.com/todo-tracker/todo-tracker"
+    homepage: "https://github.com/mxihan/todo-tracker"
     description: "智能 TODO 分诊工具"
     license: "MIT"
     install: |
@@ -121,7 +121,7 @@ scoops:
       name: scoop-bucket
       branch: main
     folder: bucket
-    homepage: "https://github.com/todo-tracker/todo-tracker"
+    homepage: "https://github.com/mxihan/todo-tracker"
     description: "智能 TODO 分诊工具"
     license: MIT
 
@@ -147,7 +147,7 @@ nfpms:
     package_name: todo-tracker
     file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     vendor: TODO Tracker Team
-    homepage: "https://github.com/todo-tracker/todo-tracker"
+    homepage: "https://github.com/mxihan/todo-tracker"
     maintainer: "TODO Tracker Team <team@todo-tracker.dev>"
     description: "智能 TODO 分诊工具 - 从数百个 TODO 中找出需要关注的那些"
     license: MIT

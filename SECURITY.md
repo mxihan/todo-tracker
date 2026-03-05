@@ -20,7 +20,7 @@ We take security vulnerabilities seriously. If you discover a security vulnerabi
 Instead, please report them via one of the following methods:
 
 1. **GitHub Security Advisory** (Preferred)
-   - Go to the [Security Advisories](https://github.com/your-org/todo-tracker/security/advisories) page
+   - Go to the [Security Advisories](https://github.com/mxihan/todo-tracker/security/advisories) page
    - Click "Report a vulnerability"
    - Fill in the details
 
@@ -126,7 +126,7 @@ For security concerns, contact:
 
 - **Security Email**: security@todo-tracker.dev
 - **PGP Key**: [Available upon request]
-- **GitHub Security**: https://github.com/your-org/todo-tracker/security
+- **GitHub Security**: https://github.com/mxihan/todo-tracker/security
 
 ---
 

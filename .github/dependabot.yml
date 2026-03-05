@@ -12,7 +12,7 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 5
     reviewers:
-      - "your-org/maintainers"
+      - "mxihan/maintainers"
     labels:
       - "dependencies"
       - "go"
@@ -36,7 +36,7 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 3
     reviewers:
-      - "your-org/maintainers"
+      - "mxihan/maintainers"
     labels:
       - "dependencies"
       - "github-actions"
@@ -52,7 +52,7 @@ updates:
       time: "09:00"
     open-pull-requests-limit: 3
     reviewers:
-      - "your-org/maintainers"
+      - "mxihan/maintainers"
     labels:
       - "dependencies"
       - "docker"

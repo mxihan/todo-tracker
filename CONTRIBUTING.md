@@ -21,7 +21,7 @@
 
 ### 报告Bug
 
-如果您发现了bug，请通过[GitHub Issues](https://github.com/your-org/todo-tracker/issues)提交报告。提交前请：
+如果您发现了bug，请通过[GitHub Issues](https://github.com/mxihan/todo-tracker/issues)提交报告。提交前请：
 
 1. 搜索现有issues，确认没有重复报告
 2. 使用Bug报告模板
@@ -60,7 +60,7 @@
 ### 克隆仓库
 
 ```bash
-git clone https://github.com/your-org/todo-tracker.git
+git clone https://github.com/mxihan/todo-tracker.git
 cd todo-tracker
 ```
 
@@ -269,7 +269,7 @@ correctly with the line_end field properly set.
 如果您在使用过程中遇到问题：
 
 1. 检查 [FAQ](docs/FAQ.md)
-2. 搜索 [Issues](https://github.com/your-org/todo-tracker/issues)
+2. 搜索 [Issues](https://github.com/mxihan/todo-tracker/issues)
 3. 提交新Issue，包含：
    - 问题描述
    - 复现步骤
@@ -286,4 +286,4 @@ correctly with the line_end field properly set.
 
 ---
 
-再次感谢您的贡献！如有任何问题，欢迎在[Issues](https://github.com/your-org/todo-tracker/issues)中提问。
+再次感谢您的贡献！如有任何问题，欢迎在[Issues](https://github.com/mxihan/todo-tracker/issues)中提问。

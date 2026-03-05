@@ -59,5 +59,5 @@ CMD ["--help"]
 # Labels
 LABEL org.opencontainers.image.title="TODO Tracker"
 LABEL org.opencontainers.image.description="Intelligent TODO triage tool for codebases"
-LABEL org.opencontainers.image.source="https://github.com/your-org/todo-tracker"
+LABEL org.opencontainers.image.source="https://github.com/mxihan/todo-tracker"
 LABEL org.opencontainers.image.licenses="MIT"

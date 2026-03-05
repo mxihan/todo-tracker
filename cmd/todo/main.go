@@ -4,7 +4,7 @@ package main
 import (
 	"os"
 
-	"github.com/todo-tracker/todo-tracker/internal/cli"
+	"github.com/mxihan/todo-tracker/internal/cli"
 )
 
 // 构建时注入的版本信息
