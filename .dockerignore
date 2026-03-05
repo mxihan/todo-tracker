@@ -1,0 +1,75 @@
+# Build artifacts
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test artifacts
+*.test
+*.out
+coverage.txt
+coverage.html
+coverage.out
+
+# Go cache
+.cache/
+.go/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+
+# Test files
+testdata/
+*_test.go
+
+# Config files
+.env
+.env.*
+*.env
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build dependencies
+node_modules/
+vendor/
+
+# Docker
+Dockerfile*
+docker-compose*
+.docker/
+
+# Misc
+.editorconfig
+.gitattributes
+Makefile
+scripts/

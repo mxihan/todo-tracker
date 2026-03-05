@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+# pre-commit hook: 检查暂存文件中的TODO
+#
+# 安装方式: 复制到 .git/hooks/pre-commit 或运行 `todo hooks install`
+#
+
+# 颜色定义
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# 检查todo-tracker是否安装
+if ! command -v todo &> /dev/null; then
+    echo -e "${YELLOW}警告: todo-tracker未安装，跳过TODO检查${NC}"
+    echo "安装: brew install todo-tracker 或从GitHub Releases下载"
+    exit 0
+fi
+
+echo -e "${BLUE}检查暂存文件中的TODO...${NC}"
+
+# 获取暂存文件
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(go|js|ts|py|java|rs|c|cpp|h|hpp|sh|rb|php|cs|swift|kt|scala)$')
+
+if [ -z "$STAGED_FILES" ]; then
+    echo -e "${GREEN}没有需要检查的暂存文件${NC}"
+    exit 0
+fi
+
+# 运行TODO检查
+# 检查条件:
+# 1. 存在高优先级TODO (TODO!, FIXME!)
+# 2. 存在BUG类型
+# 3. 存在安全相关TODO (SECURITY, CRITICAL)
+
+TODO_OUTPUT=$(echo "$STAGED_FILES" | xargs todo scan --staged --fail-on="high,bug,security" --output=json 2>&1)
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -ne 0 ]; then
+    echo -e "${RED}================================================${NC}"
+    echo -e "${RED}发现需要关注的TODO:${NC}"
+    echo -e "${RED}================================================${NC}"
+    echo "$TODO_OUTPUT" | todo report --format=table
+    echo ""
+    echo -e "${YELLOW}建议处理方式:${NC}"
+    echo "  1. 解决这些TODO后再提交"
+    echo "  2. 如果必须提交，使用 git commit --no-verify 跳过检查"
+    echo "  3. 使用 todo scan --staged 查看详细列表"
+    echo ""
+    exit 1
+fi
+
+echo -e "${GREEN}TODO检查通过${NC}"
+exit 0

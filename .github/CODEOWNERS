@@ -1,0 +1,42 @@
+# CODEOWNERS - 代码审查责任分配
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# 默认所有文件的审查者
+* @your-org/maintainers
+
+# CI/CD配置
+/.github/ @your-org/release-engineers
+/.github/workflows/ @your-org/release-engineers
+
+# 构建和发布
+/Makefile @your-org/release-engineers
+/.goreleaser.yaml @your-org/release-engineers
+/Dockerfile @your-org/release-engineers
+
+# 文档
+/README.md @your-org/docs-maintainers
+/CONTRIBUTING.md @your-org/docs-maintainers
+/CHANGELOG.md @your-org/release-engineers
+/docs/ @your-org/docs-maintainers
+
+# 核心代码
+/internal/scanner/ @your-org/core-team
+/internal/parser/ @your-org/core-team
+/internal/git/ @your-org/core-team
+
+# CLI命令
+/internal/cli/ @your-org/cli-maintainers
+
+# 缓存系统
+/internal/cache/ @your-org/core-team
+
+# 配置
+/configs/ @your-org/core-team
+/.todo-tracker.yaml @your-org/core-team
+
+# 测试
+/*_test.go @your-org/qa-team
+/testdata/ @your-org/qa-team
+
+# Homebrew公式
+/homebrew/ @your-org/release-engineers

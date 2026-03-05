@@ -1,0 +1,160 @@
+# GoReleaser 配置文件
+# 文档: https://goreleaser.com
+
+# 项目信息
+project_name: todo-tracker
+
+# 构建前检查
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+# 构建配置
+builds:
+  - id: todo-tracker
+    main: ./cmd/todo
+    binary: todo
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.Commit={{.Commit}}
+      - -X main.Date={{.Date}}
+      - -X main.BuiltBy=goreleaser
+
+# 归档配置
+archives:
+  - id: default
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: "{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+    files:
+      - README.md
+      - LICENSE
+      - configs/.todo-tracker.yaml
+
+# Checksum 配置
+checksum:
+  name_template: "{{ .ProjectName }}-{{ .Version }}-checksums.txt"
+  algorithm: sha256
+
+# Snapshot 配置（用于测试构建）
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+
+# Changelog 配置
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "merge conflict"
+      - "Merge pull request"
+      - "Merge remote-tracking branch"
+      - "Merge branch"
+  groups:
+    - title: "🚀 新功能"
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 0
+    - title: "🐛 Bug 修复"
+      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
+      order: 1
+    - title: "🔧 其他更新"
+      order: 999
+
+# Release 配置
+release:
+  github:
+    owner: todo-tracker
+    name: todo-tracker
+  draft: false
+  prerelease: auto
+  mode: replace
+  header: |
+    ## TODO Tracker {{ .Tag }}
+
+    一个智能的 TODO 分诊工具，帮助你从数百个 TODO 中找出本周需要关注的那几个。
+  footer: |
+
+    **完整 Changelog**: https://github.com/todo-tracker/todo-tracker/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+    感谢所有贡献者!
+
+# Homebrew 配置
+brews:
+  - name: todo
+    repository:
+      owner: todo-tracker
+      name: homebrew-tap
+      branch: main
+    folder: Formula
+    homepage: "https://github.com/todo-tracker/todo-tracker"
+    description: "智能 TODO 分诊工具"
+    license: "MIT"
+    install: |
+      bin.install "todo"
+      etc.install "configs/.todo-tracker.yaml" => "todo-tracker.yaml"
+    test: |
+      system "#{bin}/todo", "--help"
+
+# Scoop 配置 (Windows)
+scoops:
+  - repository:
+      owner: todo-tracker
+      name: scoop-bucket
+      branch: main
+    folder: bucket
+    homepage: "https://github.com/todo-tracker/todo-tracker"
+    description: "智能 TODO 分诊工具"
+    license: MIT
+
+# Docker 配置
+dockers:
+  - id: todo-tracker
+    goos: linux
+    goarch: amd64
+    image_templates:
+      - "todotracker/todo-tracker:{{ .Version }}"
+      - "todotracker/todo-tracker:latest"
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.revision={{ .Commit }}"
+      - "--label=org.opencontainers.image.licenses=MIT"
+
+# NPM 配置 (可选)
+nfpms:
+  - id: todo-tracker
+    package_name: todo-tracker
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    vendor: TODO Tracker Team
+    homepage: "https://github.com/todo-tracker/todo-tracker"
+    maintainer: "TODO Tracker Team <team@todo-tracker.dev>"
+    description: "智能 TODO 分诊工具 - 从数百个 TODO 中找出需要关注的那些"
+    license: MIT
+    formats:
+      - deb
+      - rpm
+      - apk
+    bindir: /usr/bin
+    etc_files:
+      - "configs/.todo-tracker.yaml"

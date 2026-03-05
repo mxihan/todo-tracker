@@ -1,0 +1,105 @@
+# .todoignore - TODO Tracker忽略规则
+# 每行一个规则，支持glob模式
+
+# 依赖目录
+node_modules/
+vendor/
+third_party/
+external/
+
+# 构建输出
+dist/
+build/
+out/
+bin/
+target/
+*.out
+*.exe
+
+# 缓存目录
+.cache/
+.npm/
+.pytest_cache/
+__pycache__/
+*.pyc
+
+# 锁文件
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+Cargo.lock
+go.sum
+composer.lock
+Gemfile.lock
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# IDE配置
+.idea/
+.vscode/
+*.iml
+*.sublime-*
+
+# 版本控制
+.git/
+.svn/
+.hg/
+
+# 文档生成
+docs/_build/
+site/
+
+# 测试覆盖率
+coverage/
+.nyc_output/
+*.lcov
+
+# 压缩资源
+*.min.js
+*.min.css
+*.min.html
+
+# 字体和图片
+*.woff
+*.woff2
+*.ttf
+*.eot
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.webp
+
+# 数据文件
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.avro
+
+# 配置文件
+.env
+.env.*
+*.env
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini

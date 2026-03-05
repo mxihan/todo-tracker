@@ -1,0 +1,94 @@
+#!/bin/sh
+#
+# pre-push hook: 推送前检查过期TODO
+#
+# 安装方式: 复制到 .git/hooks/pre-push 或运行 `todo hooks install`
+#
+
+# 颜色定义
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# 配置
+STALE_DAYS=${TODO_STALE_DAYS:-90}      # 过期阈值（天）
+MAX_STALE=${TODO_MAX_STALE:-10}        # 最大允许过期TODO数量
+CHECK_ORPHANED=${TODO_CHECK_ORPHANED:-true}  # 是否检查孤儿TODO
+
+# 检查todo-tracker是否安装
+if ! command -v todo &> /dev/null; then
+    echo -e "${YELLOW}警告: todo-tracker未安装，跳过TODO检查${NC}"
+    exit 0
+fi
+
+# 获取当前分支
+CURRENT_BRANCH=$(git branch --show-current)
+
+# 获取推送的目标分支
+TARGET_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "")
+
+# 只在main/master分支进行严格检查
+if [ "$CURRENT_BRANCH" = "main" ] || [ "$CURRENT_BRANCH" = "master" ]; then
+    STRICT_MODE=true
+else
+    STRICT_MODE=false
+fi
+
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}推送前TODO检查${NC}"
+echo -e "${BLUE}================================================${NC}"
+
+# 检查过期TODO
+echo ""
+echo -e "${BLUE}[1/2] 检查过期TODO (> ${STALE_DAYS}天)...${NC}"
+
+STALE_OUTPUT=$(todo stale --older-than=${STALE_DAYS}d --output=json 2>&1)
+STALE_COUNT=$(echo "$STALE_OUTPUT" | grep -c '"id"' || echo "0")
+
+if [ "$STALE_COUNT" -gt 0 ]; then
+    echo -e "${YELLOW}发现 ${STALE_COUNT} 个过期TODO${NC}"
+
+    # 显示过期TODO详情
+    echo "$STALE_OUTPUT" | todo report --format=table --stale-only
+
+    if [ "$STRICT_MODE" = true ] && [ "$STALE_COUNT" -gt "$MAX_STALE" ]; then
+        echo ""
+        echo -e "${RED}错误: 过期TODO数量超过限制 (${STALE_COUNT} > ${MAX_STALE})${NC}"
+        echo -e "${YELLOW}请在推送到主分支前处理这些过期TODO:${NC}"
+        echo "  1. 运行 'todo stale --review' 进行交互式审查"
+        echo "  2. 解决或关闭这些TODO"
+        echo "  3. 如需强制推送，设置环境变量: TODO_SKIP_STALE=1 git push"
+        exit 1
+    fi
+else
+    echo -e "${GREEN}未发现过期TODO${NC}"
+fi
+
+# 检查孤儿TODO
+if [ "$CHECK_ORPHANED" = "true" ]; then
+    echo ""
+    echo -e "${BLUE}[2/2] 检查孤儿TODO...${NC}"
+
+    ORPHAN_OUTPUT=$(todo orphaned --output=json 2>&1)
+    ORPHAN_COUNT=$(echo "$ORPHAN_OUTPUT" | grep -c '"id"' || echo "0")
+
+    if [ "$ORPHAN_COUNT" -gt 0 ]; then
+        echo -e "${YELLOW}发现 ${ORPHAN_COUNT} 个孤儿TODO（作者已离开）${NC}"
+        echo "$ORPHAN_OUTPUT" | todo report --format=table --orphan-only
+
+        if [ "$STRICT_MODE" = true ]; then
+            echo ""
+            echo -e "${YELLOW}建议: 使用 'todo orphaned --reassign' 重新分配这些TODO${NC}"
+        fi
+    else
+        echo -e "${GREEN}未发现孤儿TODO${NC}"
+    fi
+fi
+
+echo ""
+echo -e "${GREEN}================================================${NC}"
+echo -e "${GREEN}TODO检查完成，可以推送${NC}"
+echo -e "${GREEN}================================================${NC}"
+exit 0

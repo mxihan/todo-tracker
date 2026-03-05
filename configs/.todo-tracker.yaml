@@ -1,0 +1,186 @@
+# TODO Tracker 配置文件
+# 版本
+version: 1
+
+# 扫描配置
+scan:
+  # 扫描路径
+  paths:
+    - src/
+    - lib/
+    - pkg/
+
+  # 排除路径
+  exclude:
+    - "**/node_modules/**"
+    - "**/vendor/**"
+    - "**/dist/**"
+    - "**/build/**"
+    - "**/*.min.js"
+    - "**/*.min.css"
+    - "**/.*"
+    - "**/*.lock"
+    - "**/*.sum"
+
+  # 并行工作数 (0 = 自动检测CPU核心数)
+  workers: 0
+
+  # 最大文件大小 (MB)
+  max_file_size: 10
+
+# TODO模式识别
+patterns:
+  # 支持的TODO类型
+  types:
+    - TODO
+    - FIXME
+    - HACK
+    - XXX
+    - BUG
+    - NOTE
+
+  # 优先级标记
+  priority_markers:
+    high: ["!", "URGENT", "CRITICAL", "IMPORTANT"]
+    medium: [">", "MEDIUM", "NORMAL"]
+    low: ["?", "LOW", "MINOR"]
+
+  # 元数据提取正则表达式
+  metadata:
+    # 指派人: @username 或 (username)
+    assignee_pattern: '\(([^)]+)\)|@(\w+)'
+
+    # 工单引用: #123 或 JIRA-456
+    ticket_pattern: '#(\d+)|([A-Z]+-\d+)'
+
+    # 日期: [2024-12-31]
+    date_pattern: '\[(\d{4}-\d{2}-\d{2})\]'
+
+  # 多行注释模式
+  multiline:
+    enabled: true
+    max_lines: 10
+
+# Git集成
+git:
+  # 启用Git集成
+  enabled: true
+
+  # 使用git blame获取作者信息
+  blame: true
+
+  # 默认基准分支
+  default_base: main
+
+  # 忽略的作者模式（如bot）
+  ignore_authors:
+    - "bot"
+    - "\[bot\]"
+    - "dependabot"
+
+# 过期检测配置
+stale:
+  # 过期阈值（天）
+  threshold_days: 90
+
+  # 文件修改次数警告阈值
+  churn_threshold: 10
+
+  # 是否包含未跟踪的文件
+  include_untracked: false
+
+# 孤儿检测配置
+orphan:
+  # 作者不活跃天数阈值
+  inactive_days: 180
+
+  # 作者列表白名单（永不视为孤儿）
+  whitelist:
+    # - "active-contributor"
+
+  # 检查范围
+  scope: "all"  # all | current-branch | main-branch
+
+# 输出配置
+output:
+  # 默认输出格式: table, json, markdown, html
+  format: table
+
+  # 颜色输出: auto, always, never
+  color: auto
+
+  # 表格最大宽度
+  truncate: 80
+
+  # 显示时间戳
+  show_timestamp: true
+
+  # 显示作者信息
+  show_author: true
+
+# 缓存配置
+cache:
+  # 启用缓存
+  enabled: true
+
+  # 缓存位置 (空 = 使用系统缓存目录)
+  path: ""
+
+  # 缓存有效期（小时）
+  ttl: 24
+
+  # 最大缓存大小 (MB)
+  max_size: 100
+
+# CI配置
+ci:
+  # 遇到过期TODO时失败
+  fail_on_stale: false
+
+  # 遇到孤儿TODO时失败
+  fail_on_orphan: false
+
+  # 最大允许过期天数
+  max_stale_days: 180
+
+  # 最大允许孤儿TODO数量
+  max_orphan_count: 10
+
+  # 输出GitHub Actions注解
+  github_annotations: true
+
+# 报告配置
+report:
+  # 默认报告格式
+  default_format: table
+
+  # Markdown报告选项
+  markdown:
+    include_toc: true
+    include_summary: true
+    group_by: "type"  # type | priority | author | file
+
+  # HTML报告选项
+  html:
+    theme: "light"  # light | dark
+    include_css: true
+
+# 钩子配置
+hooks:
+  # pre-commit钩子配置
+  pre_commit:
+    enabled: false
+    # 触发失败的条件
+    fail_on:
+      - "high"      # 高优先级TODO
+      - "bug"       # BUG类型
+      - "security"  # 安全相关
+
+  # pre-push钩子配置
+  pre_push:
+    enabled: false
+    # 检查过期TODO
+    check_stale: true
+    stale_days: 90
+    # 检查孤儿TODO
+    check_orphan: true
