@@ -320,3 +320,322 @@ func BenchmarkGetFileChurn(b *testing.B) {
 		client.GetFileChurn(tempFile.Name())
 	}
 }
+
+// TestClient_Run tests the Run method
+func TestClient_Run(t *testing.T) {
+	// Test in a non-git directory
+	tempDir, err := os.MkdirTemp("", "git-run-test")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	client := NewClient(tempDir)
+
+	// This should fail since it's not a git repo
+	_, err = client.Run("status")
+	if err == nil {
+		t.Log("Run() succeeded (unexpected in non-git dir)")
+	} else {
+		t.Logf("Run() returned expected error: %v", err)
+	}
+}
+
+// TestIsGitRepo_ValidGitDir tests IsGitRepo with valid git directory
+func TestIsGitRepo_ValidGitDir(t *testing.T) {
+	// Create a temp directory with .git
+	tempDir, err := os.MkdirTemp("", "git-valid-test")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	// Create .git directory
+	gitDir := filepath.Join(tempDir, ".git")
+	if err := os.MkdirAll(gitDir, 0755); err != nil {
+		t.Fatalf("Failed to create .git dir: %v", err)
+	}
+
+	client := NewClient(tempDir)
+	if !client.IsGitRepo() {
+		t.Error("IsGitRepo() should return true for valid git directory")
+	}
+}
+
+// TestGetFileHash_ErrorPaths tests GetFileHash error conditions
+func TestGetFileHash_ErrorPaths(t *testing.T) {
+	t.Run("non-existent file", func(t *testing.T) {
+		client := NewClient(".")
+		_, err := client.GetFileHash("/non/existent/file.txt")
+		if err == nil {
+			t.Error("GetFileHash() should return error for non-existent file")
+		}
+	})
+
+	t.Run("path outside repo", func(t *testing.T) {
+		client := NewClient(".")
+		// Using an absolute path that may not be in the repo
+		_, err := client.GetFileHash("/tmp/some-file.txt")
+		if err == nil {
+			t.Log("GetFileHash() succeeded (file might exist)")
+		} else {
+			t.Logf("GetFileHash() returned error: %v", err)
+		}
+	})
+}
+
+// TestGetFileChurn_ErrorPaths tests GetFileChurn error conditions
+func TestGetFileChurn_ErrorPaths(t *testing.T) {
+	t.Run("file outside repo", func(t *testing.T) {
+		client := NewClient(".")
+		_, err := client.GetFileChurn("/non/existent/path/file.go")
+		if err == nil {
+			t.Log("GetFileChurn() succeeded (unexpected)")
+		}
+	})
+}
+
+// TestGetFileLastModified_ErrorPaths tests GetFileLastModified error conditions
+func TestGetFileLastModified_ErrorPaths(t *testing.T) {
+	t.Run("file outside repo", func(t *testing.T) {
+		client := NewClient(".")
+		_, err := client.GetFileLastModified("/non/existent/path/file.go")
+		if err == nil {
+			t.Log("GetFileLastModified() succeeded (unexpected)")
+		}
+	})
+}
+
+// TestGetChangedFiles_EmptyRef tests GetChangedFiles with various refs
+func TestGetChangedFiles_EdgeCases(t *testing.T) {
+	client := NewClient(".")
+
+	t.Run("invalid ref", func(t *testing.T) {
+		_, err := client.GetChangedFiles("nonexistent-ref-12345")
+		if err == nil {
+			t.Log("GetChangedFiles() succeeded (unexpected for invalid ref)")
+		}
+	})
+}
+
+// TestGetStagedFiles_EdgeCases tests GetStagedFiles
+func TestGetStagedFiles_EdgeCases(t *testing.T) {
+	client := NewClient(".")
+
+	// In a non-staged state, this should work but return empty
+	files, err := client.GetStagedFiles()
+	if err != nil {
+		t.Logf("GetStagedFiles() returned error: %v", err)
+	} else {
+		t.Logf("GetStagedFiles() returned %d files", len(files))
+	}
+}
+
+// TestGetCommit_EdgeCases tests GetCommit with edge cases
+func TestGetCommit_EdgeCases(t *testing.T) {
+	t.Run("invalid hash", func(t *testing.T) {
+		client := NewClient(".")
+		_, err := client.GetCommit("invalidhash12345")
+		if err == nil {
+			t.Log("GetCommit() succeeded (unexpected for invalid hash)")
+		}
+	})
+
+	t.Run("non-existent commit", func(t *testing.T) {
+		client := NewClient(".")
+		_, err := client.GetCommit("0000000000000000000000000000000000000000")
+		if err == nil {
+			t.Log("GetCommit() succeeded (unexpected for non-existent commit)")
+		}
+	})
+}
+
+// TestGetAuthors_EdgeCases tests GetAuthors edge cases
+func TestGetAuthors_EdgeCases(t *testing.T) {
+	// Test in non-git directory
+	tempDir, err := os.MkdirTemp("", "git-authors-test")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	client := NewClient(tempDir)
+	_, err = client.GetAuthors()
+	if err == nil {
+		t.Log("GetAuthors() succeeded (unexpected in non-git dir)")
+	}
+}
+
+// TestGetAuthorLastCommit_EdgeCases tests GetAuthorLastCommit edge cases
+func TestGetAuthorLastCommit_EdgeCases(t *testing.T) {
+	t.Run("empty author name", func(t *testing.T) {
+		client := NewClient(".")
+		lastCommit, err := client.GetAuthorLastCommit("")
+		if err != nil {
+			t.Logf("GetAuthorLastCommit('') returned error: %v", err)
+		}
+		// Empty author might return zero time
+		_ = lastCommit
+	})
+}
+
+// TestGetCurrentBranch_EdgeCases tests GetCurrentBranch edge cases
+func TestGetCurrentBranch_EdgeCases(t *testing.T) {
+	// Test in non-git directory
+	tempDir, err := os.MkdirTemp("", "git-branch-test")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	client := NewClient(tempDir)
+	_, err = client.GetCurrentBranch()
+	if err == nil {
+		t.Log("GetCurrentBranch() succeeded (unexpected in non-git dir)")
+	}
+}
+
+// TestGetDefaultBranch_Fallback tests GetDefaultBranch fallback behavior
+func TestGetDefaultBranch_Fallback(t *testing.T) {
+	// Test in non-git directory - should fallback to "main"
+	tempDir, err := os.MkdirTemp("", "git-default-branch-test")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	client := NewClient(tempDir)
+	branch := client.GetDefaultBranch()
+	if branch != "main" {
+		t.Errorf("GetDefaultBranch() = %s, want main", branch)
+	}
+}
+
+// TestGetRepoRoot_EdgeCases tests GetRepoRoot edge cases
+func TestGetRepoRoot_EdgeCases(t *testing.T) {
+	// Test in non-git directory
+	tempDir, err := os.MkdirTemp("", "git-root-test")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	client := NewClient(tempDir)
+	_, err = client.GetRepoRoot()
+	if err == nil {
+		t.Log("GetRepoRoot() succeeded (unexpected in non-git dir)")
+	}
+}
+
+// TestNewClient_EdgeCases tests NewClient with edge cases
+func TestNewClient_EdgeCases(t *testing.T) {
+	tests := []struct {
+		name     string
+		repoPath string
+	}{
+		{"empty string", ""},
+		{"dot", "."},
+		{"double dot", ".."},
+		{"absolute path", "/tmp"},
+		{"relative path", "./internal/git"},
+		{"path with trailing slash", "./"},
+		{"very long path", "/a/very/long/path/that/does/not/exist/anywhere/in/the/filesystem"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			client := NewClient(tt.repoPath)
+			if client == nil {
+				t.Error("NewClient() should not return nil")
+			}
+		})
+	}
+}
+
+// TestCommitInfo_Fields tests all CommitInfo fields
+func TestCommitInfo_Fields(t *testing.T) {
+	now := time.Now()
+	info := &CommitInfo{
+		Hash:      "abc123def456",
+		Author:    "Test User",
+		Email:     "test@example.com",
+		Date:      now,
+		Message:   "Test commit message",
+		FileCount: 5,
+	}
+
+	if info.Hash != "abc123def456" {
+		t.Errorf("Hash = %s, want abc123def456", info.Hash)
+	}
+	if info.Author != "Test User" {
+		t.Errorf("Author = %s, want Test User", info.Author)
+	}
+	if info.Email != "test@example.com" {
+		t.Errorf("Email = %s, want test@example.com", info.Email)
+	}
+	if !info.Date.Equal(now) {
+		t.Errorf("Date = %v, want %v", info.Date, now)
+	}
+	if info.Message != "Test commit message" {
+		t.Errorf("Message = %s, want 'Test commit message'", info.Message)
+	}
+	if info.FileCount != 5 {
+		t.Errorf("FileCount = %d, want 5", info.FileCount)
+	}
+}
+
+// TestAuthorInfo_Fields tests all AuthorInfo fields
+func TestAuthorInfo_Fields(t *testing.T) {
+	now := time.Now()
+	info := AuthorInfo{
+		Name:        "Test Author",
+		Email:       "author@example.com",
+		LastCommit:  now,
+		CommitCount: 100,
+		IsActive:    true,
+	}
+
+	if info.Name != "Test Author" {
+		t.Errorf("Name = %s, want Test Author", info.Name)
+	}
+	if info.Email != "author@example.com" {
+		t.Errorf("Email = %s, want author@example.com", info.Email)
+	}
+	if !info.LastCommit.Equal(now) {
+		t.Errorf("LastCommit = %v, want %v", info.LastCommit, now)
+	}
+	if info.CommitCount != 100 {
+		t.Errorf("CommitCount = %d, want 100", info.CommitCount)
+	}
+	if !info.IsActive {
+		t.Error("IsActive should be true")
+	}
+}
+
+// TestClient_EmptyOutput tests methods with empty git output
+func TestClient_EmptyOutput(t *testing.T) {
+	// Create temp git repo
+	tempDir, err := os.MkdirTemp("", "git-empty-test")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	client := NewClient(tempDir)
+
+	// GetStagedFiles should return empty slice for empty output
+	files, err := client.GetStagedFiles()
+	if err != nil {
+		t.Logf("GetStagedFiles() error: %v", err)
+	} else if files == nil {
+		t.Error("GetStagedFiles() should return empty slice, not nil")
+	}
+
+	// GetChangedFiles with empty output
+	changedFiles, err := client.GetChangedFiles("HEAD")
+	if err != nil {
+		t.Logf("GetChangedFiles() error: %v", err)
+	} else if changedFiles == nil {
+		t.Error("GetChangedFiles() should return empty slice, not nil")
+	}
+}

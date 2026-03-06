@@ -65,6 +65,11 @@ temp/
 .todo-tracker.local.yaml
 config.local.yaml
 
+# Agent team working files (keep config, ignore working files)
+.agent-team/shared-context.md
+.agent-team/research/*.md
+!.agent-team/research/README.md
+
 # Test artifacts
 testdata/output/
 .golden/

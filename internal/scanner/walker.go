@@ -33,12 +33,20 @@ func NewWalker(config *types.Config) *Walker {
 		"coverage",
 	}
 
-	// 默认跳过的文件
+	// 默认跳过的文件（使用通配符模式）
 	defaultSkipFiles := []string{
-		".min.js",
-		".min.css",
-		".lock",
-		".sum",
+		// 压缩资源
+		"*.min.js",
+		"*.min.css",
+		// 锁文件（通配符模式）
+		"*.lock",
+		"*.sum",
+		// 特定锁文件
+		"package-lock.json",
+		"yarn.lock",
+		"pnpm-lock.yaml",
+		"go.sum",
+		"Cargo.lock",
 	}
 
 	// 合并配置中的排除规则
@@ -110,9 +118,25 @@ func (w *Walker) shouldSkipDir(path string) bool {
 
 // shouldSkipFile 检查是否应该跳过文件
 func (w *Walker) shouldSkipFile(path string) bool {
+	base := filepath.Base(path)
+
 	for _, pattern := range w.skipFiles {
-		if strings.HasSuffix(path, pattern) {
+		// 尝试通配符匹配 (如 *.lock, *.min.js)
+		if matched, _ := filepath.Match(pattern, base); matched {
 			return true
+		}
+
+		// 尝试精确匹配 (如 package-lock.json)
+		if base == pattern {
+			return true
+		}
+
+		// 尝试后缀匹配 (如 .min.js 匹配 app.min.js)
+		if strings.HasPrefix(pattern, "*.") {
+			suffix := pattern[1:] // 将 "*.lock" 转换为 ".lock"
+			if strings.HasSuffix(base, suffix) {
+				return true
+			}
 		}
 	}
 

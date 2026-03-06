@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/mxihan/todo-tracker/pkg/types"
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 // SQLiteCache SQLite缓存实现
@@ -35,7 +35,7 @@ func NewSQLiteCache(opts *Options) (*SQLiteCache, error) {
 	}
 
 	// 打开数据库
-	db, err := sql.Open("sqlite3", opts.Path)
+	db, err := sql.Open("sqlite", opts.Path)
 	if err != nil {
 		return nil, fmt.Errorf("打开数据库失败: %w", err)
 	}

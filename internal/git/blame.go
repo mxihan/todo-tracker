@@ -30,11 +30,12 @@ type BlameResult struct {
 
 // Blamer Git Blame处理器
 type Blamer struct {
-	client *Client
+	client GitClient
 }
 
 // NewBlamer 创建新的Blamer
-func NewBlamer(client *Client) *Blamer {
+// 参数 client 可以是 *Client 或 MockClient 等实现了 GitClient 接口的类型
+func NewBlamer(client GitClient) *Blamer {
 	return &Blamer{
 		client: client,
 	}
@@ -42,14 +43,15 @@ func NewBlamer(client *Client) *Blamer {
 
 // BlameFile 对整个文件执行Git Blame
 func (b *Blamer) BlameFile(filePath string) (*BlameResult, error) {
-	relPath, err := filepath.Rel(b.client.repoPath, filePath)
+	repoPath := b.client.GetRepoPath()
+	relPath, err := filepath.Rel(repoPath, filePath)
 	if err != nil {
 		return nil, err
 	}
 
 	// 执行git blame命令
 	cmd := exec.Command("git", "blame", "--line-porcelain", relPath)
-	cmd.Dir = b.client.repoPath
+	cmd.Dir = repoPath
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
@@ -120,14 +122,15 @@ func (b *Blamer) parseBlameOutput(output string, result *BlameResult) {
 
 // BlameLine 对特定行执行Git Blame
 func (b *Blamer) BlameLine(filePath string, lineNum int) (*BlameInfo, error) {
-	relPath, err := filepath.Rel(b.client.repoPath, filePath)
+	repoPath := b.client.GetRepoPath()
+	relPath, err := filepath.Rel(repoPath, filePath)
 	if err != nil {
 		return nil, err
 	}
 
 	// 执行git blame命令，只获取指定行
 	cmd := exec.Command("git", "blame", "-L", fmt.Sprintf("%d,%d", lineNum, lineNum), "--line-porcelain", relPath)
-	cmd.Dir = b.client.repoPath
+	cmd.Dir = repoPath
 
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout

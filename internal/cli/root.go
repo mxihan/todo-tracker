@@ -21,6 +21,7 @@ func SetVersion(v, c, d string) {
 	version = v
 	commit = c
 	date = d
+	rootCmd.Version = v
 }
 
 // rootCmd 根命令

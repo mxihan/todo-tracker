@@ -65,18 +65,21 @@ func (p *Parser) ParseFile(content string, filePath string) []types.TODO {
 	// 获取文件语言配置
 	lang := p.getLanguageConfig(filePath)
 
-	// 单行注释处理
-	for lineNum, line := range lines {
-		// 跳过空行
-		if strings.TrimSpace(line) == "" {
-			continue
-		}
+	// 单行注释处理 - 仅当语言有单行注释标记时执行
+	// 对于只有多行注释的语言（如HTML、XML），跳过此步骤以避免重复
+	if lang == nil || len(lang.SingleLine) > 0 {
+		for lineNum, line := range lines {
+			// 跳过空行
+			if strings.TrimSpace(line) == "" {
+				continue
+			}
 
-		// 检查是否包含TODO类型关键字
-		if p.containsTODOType(line) {
-			todo := p.parseLine(line, filePath, lineNum+1, lang)
-			if todo != nil {
-				todos = append(todos, *todo)
+			// 检查是否包含TODO类型关键字
+			if p.containsTODOType(line) {
+				todo := p.parseLine(line, filePath, lineNum+1, lang)
+				if todo != nil {
+					todos = append(todos, *todo)
+				}
 			}
 		}
 	}
@@ -123,13 +126,13 @@ func (p *Parser) parseLine(line string, filePath string, lineNum int, lang *Lang
 
 	// 解析负责人
 	if match[3] != "" {
-		todo.Assignee = match[3]
+		todo.Assignee = strings.TrimPrefix(match[3], "@")
 	} else if p.patterns["assignee"] != nil {
 		if assigneeMatch := p.patterns["assignee"].FindStringSubmatch(commentContent); assigneeMatch != nil {
 			if assigneeMatch[1] != "" {
-				todo.Assignee = assigneeMatch[1]
+				todo.Assignee = strings.TrimPrefix(assigneeMatch[1], "@")
 			} else if assigneeMatch[2] != "" {
-				todo.Assignee = assigneeMatch[2]
+				todo.Assignee = strings.TrimPrefix(assigneeMatch[2], "@")
 			}
 		}
 	}

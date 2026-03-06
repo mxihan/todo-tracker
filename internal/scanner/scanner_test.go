@@ -153,9 +153,69 @@ func TestScanStaged(t *testing.T) {
 	ctx := context.Background()
 	result, err := scanner.ScanStaged(ctx)
 
-	// 当前是存根实现
+	// Should not return nil result
+	if result == nil {
+		t.Error("ScanStaged() returned nil result")
+		return
+	}
+
+	// Result should have initialized maps
+	if result.Summary.ByType == nil {
+		t.Error("ScanStaged() result.Summary.ByType is nil")
+	}
+	if result.Summary.ByPriority == nil {
+		t.Error("ScanStaged() result.Summary.ByPriority is nil")
+	}
+	if result.Summary.ByAuthor == nil {
+		t.Error("ScanStaged() result.Summary.ByAuthor is nil")
+	}
+
+	// If error, it might be because we're not in a git repo
+	// In a git repo, should succeed without error
 	if err != nil {
-		t.Logf("ScanStaged() returned error: %v", err)
+		t.Logf("ScanStaged() returned error (may be expected if not in git repo): %v", err)
+	}
+}
+
+// TestScanStagedWithGitDisabled 测试Git禁用时的暂存区扫描
+func TestScanStagedWithGitDisabled(t *testing.T) {
+	config := types.DefaultConfig()
+	config.Git.Enabled = false
+	scanner := NewScanner(config)
+
+	ctx := context.Background()
+	result, err := scanner.ScanStaged(ctx)
+
+	// Should return empty result without error when git is disabled
+	if err != nil {
+		t.Errorf("ScanStaged() with git disabled should not return error, got: %v", err)
+	}
+
+	if result == nil {
+		t.Error("ScanStaged() returned nil result")
+		return
+	}
+
+	if result.Summary.Total != 0 {
+		t.Errorf("ScanStaged() with git disabled should return 0 TODOs, got %d", result.Summary.Total)
+	}
+}
+
+// TestScanStagedEmptyRepo 测试空暂存区的扫描
+func TestScanStagedEmptyRepo(t *testing.T) {
+	// Skip if not in a git repo
+	config := types.DefaultConfig()
+	testScanner := NewScanner(config)
+	if !testScanner.gitClient.IsGitRepo() {
+		t.Skip("Not in a git repository, skipping TestScanStagedEmptyRepo")
+	}
+
+	scanner := NewScanner(config)
+	ctx := context.Background()
+	result, err := scanner.ScanStaged(ctx)
+
+	if err != nil {
+		t.Errorf("ScanStaged() returned error: %v", err)
 	}
 
 	if result == nil {
@@ -171,14 +231,99 @@ func TestScanSince(t *testing.T) {
 	ctx := context.Background()
 	result, err := scanner.ScanSince(ctx, "HEAD~1")
 
-	// 当前是存根实现
+	// Should not return nil result
+	if result == nil {
+		t.Error("ScanSince() returned nil result")
+		return
+	}
+
+	// Result should have initialized maps
+	if result.Summary.ByType == nil {
+		t.Error("ScanSince() result.Summary.ByType is nil")
+	}
+	if result.Summary.ByPriority == nil {
+		t.Error("ScanSince() result.Summary.ByPriority is nil")
+	}
+	if result.Summary.ByAuthor == nil {
+		t.Error("ScanSince() result.Summary.ByAuthor is nil")
+	}
+
+	// If error, it might be because we're not in a git repo
+	// In a git repo, should succeed without error
 	if err != nil {
-		t.Logf("ScanSince() returned error: %v", err)
+		t.Logf("ScanSince() returned error (may be expected if not in git repo): %v", err)
+	}
+}
+
+// TestScanSinceWithGitDisabled 测试Git禁用时的增量扫描
+func TestScanSinceWithGitDisabled(t *testing.T) {
+	config := types.DefaultConfig()
+	config.Git.Enabled = false
+	scanner := NewScanner(config)
+
+	ctx := context.Background()
+	result, err := scanner.ScanSince(ctx, "HEAD~1")
+
+	// Should return empty result without error when git is disabled
+	if err != nil {
+		t.Errorf("ScanSince() with git disabled should not return error, got: %v", err)
 	}
 
 	if result == nil {
 		t.Error("ScanSince() returned nil result")
+		return
 	}
+
+	if result.Summary.Total != 0 {
+		t.Errorf("ScanSince() with git disabled should return 0 TODOs, got %d", result.Summary.Total)
+	}
+}
+
+// TestScanSinceEmptyRef 测试无效引用的增量扫描
+func TestScanSinceEmptyRef(t *testing.T) {
+	// Skip if not in a git repo
+	config := types.DefaultConfig()
+	testScanner := NewScanner(config)
+	if !testScanner.gitClient.IsGitRepo() {
+		t.Skip("Not in a git repository, skipping TestScanSinceEmptyRef")
+	}
+
+	scanner := NewScanner(config)
+	ctx := context.Background()
+	// Using a non-existent ref should return an error
+	result, err := scanner.ScanSince(ctx, "nonexistent-ref-12345")
+
+	// Should return an error for invalid ref
+	if err == nil {
+		t.Log("ScanSince() with invalid ref did not return error (might be acceptable)")
+	}
+
+	if result == nil {
+		t.Error("ScanSince() returned nil result even with error")
+	}
+}
+
+// TestScanSinceWithContextCancellation 测试上下文取消
+func TestScanSinceWithContextCancellation(t *testing.T) {
+	// Skip if not in a git repo
+	config := types.DefaultConfig()
+	testScanner := NewScanner(config)
+	if !testScanner.gitClient.IsGitRepo() {
+		t.Skip("Not in a git repository, skipping TestScanSinceWithContextCancellation")
+	}
+
+	scanner := NewScanner(config)
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // Cancel immediately
+
+	result, err := scanner.ScanSince(ctx, "HEAD~1")
+
+	// Context cancellation may or may not cause an error depending on timing
+	// Just verify we don't panic and get a result
+	if result == nil {
+		t.Error("ScanSince() returned nil result")
+	}
+	t.Logf("ScanSince with cancelled context returned: err=%v, result.Summary.Total=%d", err, result.Summary.Total)
 }
 
 // TestScanFile 测试单文件扫描

@@ -285,3 +285,8 @@ func (c *Client) GetAuthorLastCommit(authorName string) (time.Time, error) {
 func (c *Client) GetRepoRoot() (string, error) {
 	return c.Run("rev-parse", "--show-toplevel")
 }
+
+// GetRepoPath 获取客户端配置的仓库路径
+func (c *Client) GetRepoPath() string {
+	return c.repoPath
+}

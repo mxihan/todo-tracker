@@ -184,10 +184,17 @@ func FromConfig(excludePatterns []string) *SkipRules {
 		cleanPattern := strings.TrimPrefix(pattern, "**/")
 
 		if strings.Contains(cleanPattern, "/") {
-			// 包含路径分隔符，可能是目录模式
+			// 包含路径分隔符，提取所有目录名
 			parts := strings.Split(cleanPattern, "/")
-			if len(parts) > 0 {
-				rules.AddDirectoryPattern(parts[0])
+			for _, part := range parts {
+				// 跳过空字符串、通配符和文件模式
+				if part != "" && part != "**" && part != "*" && !strings.HasPrefix(part, "*.") {
+					rules.AddDirectoryPattern(part)
+				}
+			}
+			// 检查最后部分是否是文件模式
+			if len(parts) > 0 && strings.HasPrefix(parts[len(parts)-1], "*.") {
+				rules.AddFilePattern(parts[len(parts)-1])
 			}
 		} else if strings.HasPrefix(cleanPattern, "*.") {
 			// 文件扩展名模式
